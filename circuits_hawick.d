@@ -11,7 +11,7 @@
 
 import std.stdio;
 
-int nVertices = 16;          // number of vertices
+int nVertices = 0;           // number of vertices
 int start = 0;               // starting vertex index
 int [][] Ak;                 // integer array size n of lists
                              // ie the arcs from the vertex
@@ -189,7 +189,8 @@ bool circuit(int v) { // based on Johnson ’s logical procedure CIRCUIT
     return f;
 }
 
-void setupGlobals() {  // presupposes nVertices is set up
+void setupGlobals(string[] args) {  // presupposes nVertices is set up
+    nVertices = std.conv.parse!int(args[1]);
     Ak.length = nVertices; // Ak[i][0] is the number of members, Ak[i][1]..Ak[i][n] ARE the members, i>0
     B.length = nVertices;  // B[i][0] is the number of members, B[i][1]..B[i][n] ARE the members , i>0
     blocked.length = nVertices; // we use blocked [0]..blocked[n-1], i> = 0
@@ -199,38 +200,12 @@ void setupGlobals() {  // presupposes nVertices is set up
         blocked[i] = false;
     }
 
-    addToList(Ak[0], 2);
-    addToList(Ak[0], 10);
-    addToList(Ak[0], 14);
-    addToList(Ak[1], 5);
-    addToList(Ak[1], 8);
-    addToList(Ak[2], 7);
-    addToList(Ak[2], 9);
-    addToList(Ak[3], 3);
-    addToList(Ak[3], 4);
-    addToList(Ak[3], 6);
-    addToList(Ak[4], 5);
-    addToList(Ak[4], 13);
-    addToList(Ak[4], 15);
-    addToList(Ak[6], 13);
-    addToList(Ak[8], 0);
-    addToList(Ak[8], 4);
-    addToList(Ak[8], 8);
-    addToList(Ak[9], 9);
-    addToList(Ak[10], 7);
-    addToList(Ak[10], 11);
-    addToList(Ak[11], 6);
-    addToList(Ak[12], 1);
-    addToList(Ak[12], 1);
-    addToList(Ak[12], 2);
-    addToList(Ak[12], 10);
-    addToList(Ak[12], 12);
-    addToList(Ak[12], 14);
-    addToList(Ak[13], 3);
-    addToList(Ak[13], 12);
-    addToList(Ak[13], 15);
-    addToList(Ak[14], 11);
-    addToList(Ak[15], 0);
+    for (int i = 2; i < args.length; i++) {
+        string[] vertices = std.array.split(args[i], ",");
+        int v1 = std.conv.parse!int(vertices[0]);
+        int v2 = std.conv.parse!int(vertices[1]);
+        addToList(Ak[v1], v2);
+    }
 
     lengthHistogram.length = nVertices+1; // will use as [1]...[n] to histogram circuits by length
                                           // [0] for zero length circuits, which are impossible
@@ -246,8 +221,20 @@ void setupGlobals() {  // presupposes nVertices is set up
     }
 }
 
-int main() {
-    setupGlobals();
+/*
+ * to replicate the result from figure 10 in the paper, run the program as
+ * follows:
+ *
+ * ./circuits_hawick 16 0,2 0,10 0,14 1,5 1,8 2,7 2,9 3,3 3,4 3,6 4,5 4,13 \
+ * 4,15 6,13 8,0 8,4 8,8 9,9 10,7 10,11 11,6 12,1 12,1 12,2 12,10 12,12 \
+ * 12,14 13,3 13,12 13,15 14,11 15,0
+ */
+int main(string[] args) {
+    if (args.length < 3) {
+        std.stdio.writefln("usage: %s num_vertices [v1,v2...]", args[0]);
+        return 1;
+    }
+    setupGlobals(args);
     stackClear();
     start = 0;
     bool verbose = false;

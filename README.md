@@ -16,7 +16,7 @@ Usage
 -----
 
     make
-    ./circuits_hawick 4 0,1 0,2 1,0 1,3 2,0 3,0 3,1 3,2
+    echo "0 1\n0 2\n1 0\n1 3\n2 0\n3 0\n3 1\n3 2" | ./circuits_hawick 4
 
 First argument is the number of vertices. Subsequent arguments are ordered
 pairs of comma separated vertices that make up the directed edges of the
@@ -29,10 +29,11 @@ For simplicity, there is no DOT file parser included but the following allows
 to create a suitable argument string for simple DOT graphs.
 
 Given a DOT file of a simple (no labels, colors, styles, only pairs of
-vertices...) directed graph, the following line produces commandline
-arguments in the above format for that graph.
+vertices...) directed graph, the following lines generate the number of
+vertices as well as the edge list expected on standard input.
 
-	echo `sed -n -e '/^\s*[0-9]\+;$/p' graph.dot | wc -l` `sed -n -e 's/^\s*\([0-9]\) -> \([0-9]\);$/\1,\2/p' graph.dot`
+        sed -n -e '/^\s*[0-9]\+;$/p' graph.dot | wc -l
+        sed -n -e 's/^\s*\([0-9]\) -> \([0-9]\);$/\1 \2/p' graph.dot
 
 The above line works on DOT files like the following:
 
@@ -47,9 +48,14 @@ The above line works on DOT files like the following:
       2 -> 1;
       }
 
-It would produce the following output:
+They would produce the following output:
 
-    3 0,1 0,2 1,0 2,0 2,1
+    3
+    0 1
+    0 2
+    1 0
+    2 0
+    2 1
 
 Reproducing the example from the paper
 --------------------------------------
@@ -76,6 +82,6 @@ the presence of a multiple-arc connecting nodes 12 and 1.
 The input graph, which is shown in figure 9, can be given as an input to the
 program using above format as follows:
 
-    ./circuits_hawick 16 0,2 0,10 0,14 1,5 1,8 2,7 2,9 3,3 3,4 3,6 4,5 4,13 \
-    4,15 6,13 8,0 8,4 8,8 9,9 10,7 10,11 11,6 12,1 12,1 12,2 12,10 12,12 \
-    12,14 13,3 13,12 13,15 14,11 15,0
+    echo "0 2\n0 10\n0 14\n1 5\n1 8\n2 7\n2 9\n3 3\n3 4\n3 6\n4 5\n4 13\n\
+    4 15\n6 13\n8 0\n8 4\n8 8\n9 9\n10 7\n10 11\n11 6\n12 1\n12 1\n12 2\n12 10\n12 12\n\
+    12 14\n13 3\n13 12\n13 15\n14 11\n15 0" | ./circuits_hawick 16

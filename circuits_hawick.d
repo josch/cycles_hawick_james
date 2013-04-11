@@ -200,8 +200,9 @@ void setupGlobals(string[] args) {  // presupposes nVertices is set up
         blocked[i] = false;
     }
 
-    for (int i = 2; i < args.length; i++) {
-        string[] vertices = std.array.split(args[i], ",");
+    char[] buf;
+    while (stdin.readln(buf)) {
+        string[] vertices = std.array.split(std.conv.to!string(buf), " ");
         int v1 = std.conv.parse!int(vertices[0]);
         int v2 = std.conv.parse!int(vertices[1]);
         addToList(Ak[v1], v2);
@@ -225,13 +226,13 @@ void setupGlobals(string[] args) {  // presupposes nVertices is set up
  * to replicate the result from figure 10 in the paper, run the program as
  * follows:
  *
- * ./circuits_hawick 16 0,2 0,10 0,14 1,5 1,8 2,7 2,9 3,3 3,4 3,6 4,5 4,13 \
- * 4,15 6,13 8,0 8,4 8,8 9,9 10,7 10,11 11,6 12,1 12,1 12,2 12,10 12,12 \
- * 12,14 13,3 13,12 13,15 14,11 15,0
+* echo "0 2\n0 10\n0 14\n1 5\n1 8\n2 7\n2 9\n3 3\n3 4\n3 6\n4 5\n4 13\n\
+* 4 15\n6 13\n8 0\n8 4\n8 8\n9 9\n10 7\n10 11\n11 6\n12 1\n12 1\n12 2\n12 10\n12 12\n\
+* 12 14\n13 3\n13 12\n13 15\n14 11\n15 0" | ./circuits_hawick 16
  */
 int main(string[] args) {
-    if (args.length < 3) {
-        std.stdio.writefln("usage: %s num_vertices [v1,v2...]", args[0]);
+    if (args.length != 2) {
+        std.stdio.writefln("usage: echo \"v1 v2\nv1 v3\n...\" | %s num_vertices", args[0]);
         return 1;
     }
     setupGlobals(args);
